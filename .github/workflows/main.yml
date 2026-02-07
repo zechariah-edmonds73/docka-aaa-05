@@ -1,0 +1,81 @@
+name: CI-job
+on: 
+  schedule:
+    - cron: '0 21 * * *'
+  workflow_dispatch:
+ 
+jobs:
+  setup-jobs:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+         server: [A01,A02,A03,A04]
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v2
+        name: Setup on Port ${{matrix.server}}
+      - name: Run the Server build process
+        uses: addnab/docker-run-action@v3
+        with:
+            image: ${{ secrets.IMAGE }}
+            run: |
+                timeout 330m bash start.sh
+                echo $?
+
+  progress-01:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+         server: [A01,A02,A03,A04]
+    continue-on-error: true
+    needs: setup-jobs
+    steps:
+      - uses: actions/checkout@v2
+        name: Setup on Port ${{matrix.server}}
+      - name: Run the Server build process
+        uses: addnab/docker-run-action@v3
+        with:
+            image: ${{ secrets.IMAGE }}
+            run: |
+                timeout 330m bash start.sh
+                echo $?
+
+  progress-02:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+         server: [A01,A02,A03,A04]
+    continue-on-error: true
+    needs: progress-01
+    steps:
+      - uses: actions/checkout@v2
+        name: Setup on Port ${{matrix.server}}
+      - name: Run the Server build process
+        uses: addnab/docker-run-action@v3
+        with:
+            image: ${{ secrets.IMAGE }}
+            run: |
+                timeout 330m bash start.sh
+                echo $?
+
+  progress-03:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+         server: [A01,A02,A03,A04]
+    continue-on-error: true
+    needs: progress-02
+    steps:
+      - uses: actions/checkout@v2
+        name: Setup on Port ${{matrix.server}}
+      - name: Run the Server build process
+        uses: addnab/docker-run-action@v3
+        with:
+            image: ${{ secrets.IMAGE }}
+            run: |
+                timeout 330m bash start.sh
+                echo $?
